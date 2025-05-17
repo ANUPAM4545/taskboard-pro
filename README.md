@@ -2,7 +2,29 @@
 
 TaskBoard Pro is a modern, feature-rich task management application built with Next.js and React. It provides an intuitive interface for managing tasks through a customizable kanban board with drag-and-drop functionality, task categorization, calendar view, and detailed statistics.
 
-![TaskBoard Pro](https://placeholder.svg?height=400&width=800)
+website images:
+<img width="1461" alt="Screenshot 2025-05-17 at 11 31 29" src="https://github.com/user-attachments/assets/f1b3c2cb-5495-4a61-8b86-a207b867fea8" />
+<img width="1448" alt="Screenshot 2025-05-17 at 11 32 24" src="https://github.com/user-attachments/assets/d90fcc6f-8d0e-4ede-9b5c-dbebb80ce5d9" />
+<img width="1464" alt="Screenshot 2025-05-17 at 11 33 34" src="https://github.com/user-attachments/assets/f580e690-bf84-4cee-92be-08ca09f43dd9" />
+<img width="700" alt="Screenshot 2025-05-17 at 11 33 55" src="https://github.com/user-attachments/assets/c587570f-4b55-476c-a861-ac4163c735b6" />
+<img width="643" alt="Screenshot 2025-05-17 at 11 34 21" src="https://github.com/user-attachments/assets/6db6d9a2-624e-4a2f-9da9-35573ece3f2b" />
+<img width="644" alt="Screenshot 2025-05-17 at 11 34 48" src="https://github.com/user-attachments/assets/4dfe9ba9-2443-43d6-ac93-bd5d967655a8" />
+<img width="1432" alt="Screenshot 2025-05-17 at 11 35 15" src="https://github.com/user-attachments/assets/991e5c6f-3bdb-4f1e-b195-b40a8a24953c" />
+<img width="1428" alt="Screenshot 2025-05-17 at 11 35 31" src="https://github.com/user-attachments/assets/00b686a0-1571-4439-aba6-feb296388cd5" />
+<img width="1382" alt="Screenshot 2025-05-17 at 11 35 51" src="https://github.com/user-attachments/assets/3c2af417-5d2b-4083-80f8-63be98462fb1" />
+<img width="1402" alt="Screenshot 2025-05-17 at 11 36 05" src="https://github.com/user-attachments/assets/e31e57aa-67c5-45db-bc3d-03f25955086c" />
+<img width="1418" alt="Screenshot 2025-05-17 at 11 36 17" src="https://github.com/user-attachments/assets/1411c4cd-c042-4852-967e-c606565601f4" />
+
+
+
+
+
+
+
+
+
+
+
 
 ## Table of Contents
 
