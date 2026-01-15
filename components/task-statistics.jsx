@@ -2,6 +2,7 @@
 
 import { useState, useMemo } from "react"
 import { BarChart, AlertTriangle, Tag, Calendar } from "lucide-react"
+import { motion } from "framer-motion"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs"
 import { Badge } from "@/components/ui/badge"
@@ -194,72 +195,84 @@ export function TaskStatistics({ boardData }) {
         </TabsList>
 
         {/* Overview Tab */}
-        <TabsContent value="overview" className="mt-4">
-          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-            <Card>
+        <TabsContent value="overview" className="mt-4 outline-none">
+          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+            <Card className="bg-background/40 backdrop-blur-sm border-white/5 shadow-xl">
               <CardHeader className="pb-2">
-                <CardTitle className="text-sm font-medium">Total Tasks</CardTitle>
+                <CardTitle className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">Total Tasks</CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold">{stats.totalTasks}</div>
-                <p className="text-xs text-muted-foreground">Across all columns</p>
+                <div className="text-3xl font-extrabold tracking-tighter">{stats.totalTasks}</div>
+                <p className="text-xs text-muted-foreground mt-1 flex items-center gap-1">
+                  <span className="w-1.5 h-1.5 rounded-full bg-blue-500" />
+                  Across all lists
+                </p>
               </CardContent>
             </Card>
-            <Card>
+            <Card className="bg-background/40 backdrop-blur-sm border-white/5 shadow-xl">
               <CardHeader className="pb-2">
-                <CardTitle className="text-sm font-medium">Completion Rate</CardTitle>
+                <CardTitle className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">Completion Rate</CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold">{stats.completionRate}%</div>
-                <div className="mt-2 h-2 w-full rounded-full bg-muted">
-                  <div className="h-2 rounded-full bg-primary" style={{ width: `${stats.completionRate}%` }} />
+                <div className="text-3xl font-extrabold tracking-tighter">{stats.completionRate}%</div>
+                <div className="mt-3 h-1.5 w-full rounded-full bg-muted overflow-hidden">
+                  <motion.div
+                    initial={{ width: 0 }}
+                    animate={{ width: `${stats.completionRate}%` }}
+                    transition={{ duration: 1, ease: "circOut" }}
+                    className="h-full bg-primary"
+                  />
                 </div>
               </CardContent>
             </Card>
-            <Card>
+            <Card className="bg-background/40 backdrop-blur-sm border-white/5 shadow-xl">
               <CardHeader className="pb-2">
-                <CardTitle className="text-sm font-medium">In Progress</CardTitle>
+                <CardTitle className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">Active Tasks</CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold">{stats.tasksByStatus.inProgress}</div>
-                <p className="text-xs text-muted-foreground">Tasks currently being worked on</p>
+                <div className="text-3xl font-extrabold tracking-tighter">{stats.tasksByStatus.inProgress}</div>
+                <p className="text-xs text-muted-foreground mt-1 flex items-center gap-1">
+                  <span className="w-1.5 h-1.5 rounded-full bg-yellow-500 animate-pulse" />
+                  Work in progress
+                </p>
               </CardContent>
             </Card>
-            <Card>
+            <Card className="bg-background/40 backdrop-blur-sm border-red-500/20 shadow-xl">
               <CardHeader className="pb-2">
-                <CardTitle className="text-sm font-medium">Overdue</CardTitle>
+                <CardTitle className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">Overdue</CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold text-red-500">{stats.overdueTasks}</div>
-                <p className="text-xs text-muted-foreground">Tasks past their due date</p>
+                <div className="text-3xl font-extrabold tracking-tighter text-red-500">{stats.overdueTasks}</div>
+                <p className="text-xs text-muted-foreground mt-1 flex items-center gap-1">
+                  <span className="w-1.5 h-1.5 rounded-full bg-red-500" />
+                  Requires attention
+                </p>
               </CardContent>
             </Card>
           </div>
 
-          <Card className="mt-4">
+          <Card className="mt-6 bg-background/40 backdrop-blur-sm border-white/5 shadow-xl">
             <CardHeader>
-              <CardTitle>Tasks by Column</CardTitle>
-              <CardDescription>Distribution of tasks across workflow stages</CardDescription>
+              <CardTitle className="text-lg font-bold">Workflow Intelligence</CardTitle>
+              <CardDescription>Visual distribution of tasks across the pipeline</CardDescription>
             </CardHeader>
             <CardContent>
-              <div className="space-y-4">
+              <div className="space-y-6">
                 {stats.tasksPerColumn.map((column) => (
-                  <div key={column.id} className="flex items-center">
-                    <div className="w-28 min-w-[7rem] text-sm">{column.title}</div>
-                    <div className="flex-1">
-                      <div className="flex h-9 items-center">
-                        <div className="relative h-2 w-full rounded-full bg-muted">
-                          <div
-                            className="absolute inset-y-0 left-0 rounded-full"
-                            style={{
-                              width: `${stats.totalTasks ? (column.count / stats.totalTasks) * 100 : 0}%`,
-                              backgroundColor: column.color,
-                            }}
-                          />
-                        </div>
-                      </div>
+                  <div key={column.id} className="group">
+                    <div className="flex items-center justify-between mb-2">
+                      <span className="text-sm font-semibold">{column.title}</span>
+                      <span className="text-xs font-mono text-muted-foreground">{column.count} tasks</span>
                     </div>
-                    <div className="w-12 text-right text-sm">{column.count}</div>
+                    <div className="h-2 w-full rounded-full bg-muted overflow-hidden">
+                      <motion.div
+                        initial={{ width: 0 }}
+                        animate={{ width: `${stats.totalTasks ? (column.count / stats.totalTasks) * 100 : 0}%` }}
+                        transition={{ duration: 0.8, delay: 0.1, ease: "circOut" }}
+                        className="h-full rounded-full transition-all group-hover:brightness-110"
+                        style={{ backgroundColor: column.color }}
+                      />
+                    </div>
                   </div>
                 ))}
               </div>

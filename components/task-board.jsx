@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react"
 import { DragDropContext } from "@hello-pangea/dnd"
+import { motion } from "framer-motion"
 import { Plus, X, Search, Filter, Tag, BarChart } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -239,7 +240,6 @@ export default function TaskBoard({ viewMode = "board" }) {
   const [searchTerm, setSearchTerm] = useState("")
   const [filteredData, setFilteredData] = useState(null)
   const { toast } = useToast()
-  const [activeView, setActiveView] = useState(viewMode)
   const [priorityFilter, setPriorityFilter] = useState({
     high: true,
     medium: true,
@@ -247,9 +247,6 @@ export default function TaskBoard({ viewMode = "board" }) {
   })
   const [labelFilter, setLabelFilter] = useState([])
 
-  useEffect(() => {
-    setActiveView(viewMode)
-  }, [viewMode])
 
   useEffect(() => {
     // In a real app, you would fetch this from your backend
@@ -618,9 +615,6 @@ export default function TaskBoard({ viewMode = "board" }) {
     })
   }
 
-  const toggleView = () => {
-    setActiveView(activeView === "board" ? "calendar" : "board")
-  }
 
   const togglePriorityFilter = (priority) => {
     setPriorityFilter({
@@ -660,236 +654,242 @@ export default function TaskBoard({ viewMode = "board" }) {
   }
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-8">
       <Toaster />
-      <div className="flex flex-col sm:flex-row justify-between items-center gap-4 mb-6">
-        <div className="flex items-center gap-2 w-full sm:w-auto">
-          <div className="relative flex-1 min-w-[240px]">
+      <div className="glass-panel p-4 rounded-2xl flex flex-col lg:flex-row justify-between items-center gap-6">
+        <div className="flex items-center gap-4 w-full lg:w-auto">
+          <div className="relative flex-1 min-w-[300px] group">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground group-focus-within:text-primary transition-colors" />
             <Input
               type="text"
-              placeholder="Search tasks..."
+              placeholder="Search assets, tasks, or tags..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="pr-8"
+              className="pl-10 pr-10 h-11 bg-background/40 border-white/5 focus:border-primary/50 rounded-xl transition-all shadow-inner"
             />
             {searchTerm && (
-              <button
+              <motion.button
+                initial={{ opacity: 0, scale: 0.8 }}
+                animate={{ opacity: 1, scale: 1 }}
                 onClick={() => setSearchTerm("")}
-                className="absolute right-2 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground p-1 rounded-md hover:bg-muted/50 transition-all"
               >
                 <X className="h-4 w-4" />
-                <span className="sr-only">Clear search</span>
-              </button>
+              </motion.button>
             )}
           </div>
 
-          <Popover>
-            <PopoverTrigger asChild>
-              <Button variant="outline" size="icon" className="relative">
-                <Filter className="h-4 w-4" />
-                {isFiltering() && <span className="absolute -top-1 -right-1 h-2 w-2 rounded-full bg-primary"></span>}
-              </Button>
-            </PopoverTrigger>
-            <PopoverContent className="w-72">
-              <div className="space-y-4">
-                <div className="space-y-2">
-                  <h4 className="font-medium">Filter by Priority</h4>
-                  <div className="space-y-2">
-                    <div className="flex items-center space-x-2">
-                      <Checkbox
-                        id="filter-high"
-                        checked={priorityFilter.high}
-                        onCheckedChange={() => togglePriorityFilter("high")}
-                      />
-                      <Label htmlFor="filter-high" className="flex items-center">
-                        <Badge
-                          variant="outline"
-                          className="bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300"
-                        >
-                          High
-                        </Badge>
-                      </Label>
-                    </div>
-                    <div className="flex items-center space-x-2">
-                      <Checkbox
-                        id="filter-medium"
-                        checked={priorityFilter.medium}
-                        onCheckedChange={() => togglePriorityFilter("medium")}
-                      />
-                      <Label htmlFor="filter-medium" className="flex items-center">
-                        <Badge
-                          variant="outline"
-                          className="bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-300"
-                        >
-                          Medium
-                        </Badge>
-                      </Label>
-                    </div>
-                    <div className="flex items-center space-x-2">
-                      <Checkbox
-                        id="filter-low"
-                        checked={priorityFilter.low}
-                        onCheckedChange={() => togglePriorityFilter("low")}
-                      />
-                      <Label htmlFor="filter-low" className="flex items-center">
-                        <Badge
-                          variant="outline"
-                          className="bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300"
-                        >
-                          Low
-                        </Badge>
-                      </Label>
-                    </div>
-                  </div>
-                </div>
+          <div className="flex items-center gap-2">
+            <Popover>
+              <PopoverTrigger asChild>
+                <Button variant="outline" className="h-11 px-4 relative rounded-xl border-white/5 bg-background/40 hover:bg-background/60 shadow-sm transition-all group">
+                  <Filter className="h-4 w-4 mr-2 group-hover:rotate-12 transition-transform" />
+                  <span className="text-sm font-semibold">Filter</span>
+                  {isFiltering() && (
+                    <span className="absolute -top-1 -right-1 flex h-4 w-4">
+                      <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
+                      <span className="relative inline-flex rounded-full h-4 w-4 bg-primary text-[10px] items-center justify-center text-primary-foreground font-black">!</span>
+                    </span>
+                  )}
+                </Button>
+              </PopoverTrigger>
+              {/* ... PopoverContent remains same ... */}
 
-                <div className="space-y-2">
-                  <h4 className="font-medium">Filter by Label</h4>
-                  <div className="space-y-2 max-h-40 overflow-y-auto pr-2">
-                    {Object.values(boardData.labels).map((label) => (
-                      <div key={label.id} className="flex items-center space-x-2">
+              <PopoverContent className="w-72">
+                <div className="space-y-4">
+                  <div className="space-y-2">
+                    <h4 className="font-medium">Filter by Priority</h4>
+                    <div className="space-y-2">
+                      <div className="flex items-center space-x-2">
                         <Checkbox
-                          id={`filter-label-${label.id}`}
-                          checked={labelFilter.includes(label.id)}
-                          onCheckedChange={() => toggleLabelFilter(label.id)}
+                          id="filter-high"
+                          checked={priorityFilter.high}
+                          onCheckedChange={() => togglePriorityFilter("high")}
                         />
-                        <Label htmlFor={`filter-label-${label.id}`} className="flex items-center">
-                          <div className="w-3 h-3 rounded-full mr-2" style={{ backgroundColor: label.color }}></div>
-                          {label.name}
+                        <Label htmlFor="filter-high" className="flex items-center">
+                          <Badge
+                            variant="outline"
+                            className="bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300"
+                          >
+                            High
+                          </Badge>
                         </Label>
                       </div>
-                    ))}
+                      <div className="flex items-center space-x-2">
+                        <Checkbox
+                          id="filter-medium"
+                          checked={priorityFilter.medium}
+                          onCheckedChange={() => togglePriorityFilter("medium")}
+                        />
+                        <Label htmlFor="filter-medium" className="flex items-center">
+                          <Badge
+                            variant="outline"
+                            className="bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-300"
+                          >
+                            Medium
+                          </Badge>
+                        </Label>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <Checkbox
+                          id="filter-low"
+                          checked={priorityFilter.low}
+                          onCheckedChange={() => togglePriorityFilter("low")}
+                        />
+                        <Label htmlFor="filter-low" className="flex items-center">
+                          <Badge
+                            variant="outline"
+                            className="bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300"
+                          >
+                            Low
+                          </Badge>
+                        </Label>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="space-y-2">
+                    <h4 className="font-medium">Filter by Label</h4>
+                    <div className="space-y-2 max-h-40 overflow-y-auto pr-2">
+                      {Object.values(boardData.labels).map((label) => (
+                        <div key={label.id} className="flex items-center space-x-2">
+                          <Checkbox
+                            id={`filter-label-${label.id}`}
+                            checked={labelFilter.includes(label.id)}
+                            onCheckedChange={() => toggleLabelFilter(label.id)}
+                          />
+                          <Label htmlFor={`filter-label-${label.id}`} className="flex items-center">
+                            <div className="w-3 h-3 rounded-full mr-2" style={{ backgroundColor: label.color }}></div>
+                            {label.name}
+                          </Label>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div className="pt-2 border-t">
+                    <Button variant="ghost" size="sm" onClick={clearFilters} className="w-full justify-start">
+                      Clear all filters
+                    </Button>
                   </div>
                 </div>
+              </PopoverContent>
+            </Popover>
 
-                <div className="pt-2 border-t">
-                  <Button variant="ghost" size="sm" onClick={clearFilters} className="w-full justify-start">
-                    Clear all filters
-                  </Button>
-                </div>
-              </div>
-            </PopoverContent>
-          </Popover>
+            <Button
+              variant="outline"
+              size="icon"
+              onClick={() => setIsLabelManagerOpen(true)}
+              className="relative"
+              title="Manage Labels"
+            >
+              <Tag className="h-4 w-4" />
+            </Button>
 
-          <Button
-            variant="outline"
-            size="icon"
-            onClick={() => setIsLabelManagerOpen(true)}
-            className="relative"
-            title="Manage Labels"
-          >
-            <Tag className="h-4 w-4" />
-          </Button>
-
-          <Button
-            variant="outline"
-            size="icon"
-            onClick={() => setShowStatistics(!showStatistics)}
-            className={`relative ${showStatistics ? "bg-primary/10" : ""}`}
-            title="Task Statistics"
-          >
-            <BarChart className="h-4 w-4" />
-          </Button>
-        </div>
-
-        <div className="flex items-center gap-2">
-          <div className="flex items-center space-x-2">
-            <Switch id="view-toggle" checked={activeView === "calendar"} onCheckedChange={toggleView} />
-            <Label htmlFor="view-toggle" className="text-sm">
-              {activeView === "board" ? "Board View" : "Calendar View"}
-            </Label>
+            <Button
+              variant="outline"
+              size="icon"
+              onClick={() => setShowStatistics(!showStatistics)}
+              className={`relative ${showStatistics ? "bg-primary/10" : ""}`}
+              title="Task Statistics"
+            >
+              <BarChart className="h-4 w-4" />
+            </Button>
           </div>
-          <Dialog open={isAddTaskOpen} onOpenChange={setIsAddTaskOpen}>
-            <DialogTrigger asChild>
-              <Button>
-                <Plus className="mr-2 h-4 w-4" />
-                Add Task
-              </Button>
-            </DialogTrigger>
-            <DialogContent className="sm:max-w-md">
-              <DialogHeader>
-                <DialogTitle>Add New Task</DialogTitle>
-              </DialogHeader>
-              <div className="space-y-4 py-4">
-                <div className="space-y-2">
-                  <Label htmlFor="title">Title</Label>
-                  <Input
-                    id="title"
-                    placeholder="Task title"
-                    value={newTask.title}
-                    onChange={(e) => setNewTask({ ...newTask, title: e.target.value })}
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="description">Description</Label>
-                  <Textarea
-                    id="description"
-                    placeholder="Task description"
-                    value={newTask.description}
-                    onChange={(e) => setNewTask({ ...newTask, description: e.target.value })}
-                  />
-                </div>
-                <div className="grid grid-cols-2 gap-4">
+
+          <div className="flex items-center gap-2">
+            <Dialog open={isAddTaskOpen} onOpenChange={setIsAddTaskOpen}>
+              <DialogTrigger asChild>
+                <Button>
+                  <Plus className="mr-2 h-4 w-4" />
+                  Add Task
+                </Button>
+              </DialogTrigger>
+              <DialogContent className="sm:max-w-md">
+                <DialogHeader>
+                  <DialogTitle>Add New Task</DialogTitle>
+                </DialogHeader>
+                <div className="space-y-4 py-4">
                   <div className="space-y-2">
-                    <Label htmlFor="priority">Priority</Label>
-                    <Select
-                      value={newTask.priority}
-                      onValueChange={(value) => setNewTask({ ...newTask, priority: value })}
-                    >
-                      <SelectTrigger id="priority">
-                        <SelectValue placeholder="Select priority" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="low">Low</SelectItem>
-                        <SelectItem value="medium">Medium</SelectItem>
-                        <SelectItem value="high">High</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="dueDate">Due Date</Label>
+                    <Label htmlFor="title">Title</Label>
                     <Input
-                      id="dueDate"
-                      type="date"
-                      value={newTask.dueDate}
-                      onChange={(e) => setNewTask({ ...newTask, dueDate: e.target.value })}
+                      id="title"
+                      placeholder="Task title"
+                      value={newTask.title}
+                      onChange={(e) => setNewTask({ ...newTask, title: e.target.value })}
                     />
                   </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="description">Description</Label>
+                    <Textarea
+                      id="description"
+                      placeholder="Task description"
+                      value={newTask.description}
+                      onChange={(e) => setNewTask({ ...newTask, description: e.target.value })}
+                    />
+                  </div>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="priority">Priority</Label>
+                      <Select
+                        value={newTask.priority}
+                        onValueChange={(value) => setNewTask({ ...newTask, priority: value })}
+                      >
+                        <SelectTrigger id="priority">
+                          <SelectValue placeholder="Select priority" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="low">Low</SelectItem>
+                          <SelectItem value="medium">Medium</SelectItem>
+                          <SelectItem value="high">High</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="dueDate">Due Date</Label>
+                      <Input
+                        id="dueDate"
+                        type="date"
+                        value={newTask.dueDate}
+                        onChange={(e) => setNewTask({ ...newTask, dueDate: e.target.value })}
+                      />
+                    </div>
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="labels">Labels</Label>
+                    <MultiSelect
+                      options={Object.values(boardData.labels).map((label) => ({
+                        value: label.id,
+                        label: label.name,
+                        color: label.color,
+                      }))}
+                      selected={newTask.labels}
+                      onChange={(selected) => setNewTask({ ...newTask, labels: selected })}
+                      onCreateOption={(name) => {
+                        const color = `#${Math.floor(Math.random() * 16777215).toString(16)}`
+                        const labelId = handleAddLabel({ name, color })
+                        return labelId
+                      }}
+                      placeholder="Select labels"
+                    />
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <Switch
+                      id="reminder"
+                      checked={newTask.reminder}
+                      onCheckedChange={(checked) => setNewTask({ ...newTask, reminder: checked })}
+                    />
+                    <Label htmlFor="reminder" className="text-sm font-normal">
+                      Enable reminders for this task
+                    </Label>
+                  </div>
+                  <div className="flex justify-end">
+                    <Button onClick={handleAddTask}>Add Task</Button>
+                  </div>
                 </div>
-                <div className="space-y-2">
-                  <Label htmlFor="labels">Labels</Label>
-                  <MultiSelect
-                    options={Object.values(boardData.labels).map((label) => ({
-                      value: label.id,
-                      label: label.name,
-                      color: label.color,
-                    }))}
-                    selected={newTask.labels}
-                    onChange={(selected) => setNewTask({ ...newTask, labels: selected })}
-                    onCreateOption={(name) => {
-                      const color = `#${Math.floor(Math.random() * 16777215).toString(16)}`
-                      const labelId = handleAddLabel({ name, color })
-                      return labelId
-                    }}
-                    placeholder="Select labels"
-                  />
-                </div>
-                <div className="flex items-center space-x-2">
-                  <Switch
-                    id="reminder"
-                    checked={newTask.reminder}
-                    onCheckedChange={(checked) => setNewTask({ ...newTask, reminder: checked })}
-                  />
-                  <Label htmlFor="reminder" className="text-sm font-normal">
-                    Enable reminders for this task
-                  </Label>
-                </div>
-                <div className="flex justify-end">
-                  <Button onClick={handleAddTask}>Add Task</Button>
-                </div>
-              </div>
-            </DialogContent>
-          </Dialog>
+              </DialogContent>
+            </Dialog>
+          </div>
         </div>
       </div>
 
@@ -899,7 +899,7 @@ export default function TaskBoard({ viewMode = "board" }) {
         </div>
       )}
 
-      {activeView === "board" ? (
+      {viewMode === "board" ? (
         <DragDropContext onDragEnd={handleDragEnd}>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4">
             {filteredData.columnOrder.map((columnId) => {
@@ -923,7 +923,7 @@ export default function TaskBoard({ viewMode = "board" }) {
         <CalendarView boardData={filteredData} onDeleteTask={handleDeleteTask} onEditTask={handleEditTask} />
       )}
 
-      {activeView === "board" &&
+      {viewMode === "board" &&
         Object.values(filteredData.columns).every((column) => column.taskIds.length === 0) &&
         isFiltering() && (
           <div className="col-span-1 md:col-span-3 py-8 text-center">

@@ -7,6 +7,7 @@ import DashboardHeader from "@/components/dashboard-header"
 import TaskBoard from "@/components/task-board"
 import { SiteFooter } from "@/components/site-footer"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { motion } from "framer-motion"
 import { Calendar, LayoutGrid } from "lucide-react"
 
 export default function DashboardPage() {
@@ -33,37 +34,48 @@ export default function DashboardPage() {
   }
 
   return (
-    <div className="flex min-h-screen flex-col">
+    <div className="flex min-h-screen flex-col relative overflow-hidden">
+      {/* Dynamic Background */}
+      <div className="fixed inset-0 z-0 mesh-gradient opacity-40 dark:opacity-60" />
+      <div className="fixed inset-0 z-0 bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')] opacity-5 pointer-events-none" />
+
       <DashboardHeader />
-      <main className="flex-1 p-4">
-        <div className="mx-auto max-w-[1400px]">
-          <h1 className="mb-6 text-2xl font-bold">Welcome, {user.name}</h1>
 
-          <Tabs defaultValue="board" value={activeView} onValueChange={setActiveView} className="mb-6">
-            <TabsList className="grid w-full max-w-md grid-cols-2">
-              <TabsTrigger value="board" className="flex items-center gap-2">
-                <LayoutGrid className="h-4 w-4" />
-                <span>Board View</span>
-              </TabsTrigger>
-              <TabsTrigger value="calendar" className="flex items-center gap-2">
-                <Calendar className="h-4 w-4" />
-                <span>Calendar View</span>
-              </TabsTrigger>
-            </TabsList>
+      <main className="flex-1 p-6 md:p-10 relative z-10">
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+          className="mx-auto max-w-[1500px]"
+        >
+          <div className="mb-10 flex flex-col md:flex-row md:items-end md:justify-between gap-6">
+            <div className="space-y-2">
+              <h1 className="text-4xl md:text-5xl font-black tracking-tighter bg-clip-text text-transparent bg-gradient-to-r from-foreground to-foreground/50">
+                Active Workspace
+              </h1>
+              <p className="text-muted-foreground text-lg font-medium">
+                Orchestrate your flow. Track, manage, and deliver.
+              </p>
+            </div>
 
-            <TabsContent value="board" className="mt-4">
-              <TaskBoard viewMode="board" />
-            </TabsContent>
+            <Tabs defaultValue="board" value={activeView} onValueChange={setActiveView} className="mb-6">
+              <div className="flex items-center justify-between mb-4">
+                <TabsList className="p-1 h-11 bg-muted/50 backdrop-blur-sm border rounded-xl">
+                  <TabsTrigger value="board" className="rounded-lg px-6 data-[state=active]:bg-background data-[state=active]:shadow-sm transition-all flex items-center gap-2">
+                    <LayoutGrid className="h-4 w-4" />
+                    <span>Board</span>
+                  </TabsTrigger>
+                  <TabsTrigger value="calendar" className="rounded-lg px-6 data-[state=active]:bg-background data-[state=active]:shadow-sm transition-all flex items-center gap-2">
+                    <Calendar className="h-4 w-4" />
+                    <span>Calendar</span>
+                  </TabsTrigger>
+                </TabsList>
+              </div>
 
-            <TabsContent value="calendar" className="mt-4">
-              <TaskBoard viewMode="calendar" />
-            </TabsContent>
-
-            <TabsContent value="calendar" className="mt-4">
-              <TaskBoard viewMode="calendar" />
-            </TabsContent>
-          </Tabs>
-        </div>
+              <TaskBoard viewMode={activeView} />
+            </Tabs>
+          </div>
+        </motion.div>
       </main>
       <SiteFooter />
     </div>

@@ -2,6 +2,7 @@
 
 import { useState } from "react"
 import { Trash2, Calendar, Edit, Bell, AlertCircle } from "lucide-react"
+import { motion } from "framer-motion"
 import { Card, CardContent, CardFooter } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
@@ -76,70 +77,72 @@ export default function TaskCard({ task, labels = {}, onDelete, onEdit, isArchiv
   const taskLabels = task.labels?.filter((id) => labels[id]) || []
 
   return (
-    <>
-      <Card className={`group hover:shadow-md transition-all duration-200 ${isArchived ? "opacity-75" : ""}`}>
-        <CardContent className="p-4">
-          <div className="flex items-start justify-between">
-            <div className="flex-1">
-              <h4 className="font-medium text-base">{task.title}</h4>
-              <p className="mt-1 text-sm text-muted-foreground line-clamp-2">{task.description}</p>
+    <div className="relative group/card">
+      <motion.div
+        whileHover={{ y: -4, scale: 1.01 }}
+        initial={{ opacity: 0, scale: 0.95 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ duration: 0.3 }}
+      >
+        <Card className={`group relative overflow-hidden bg-background/40 backdrop-blur-xl border-white/5 hover:border-primary/40 hover:shadow-2xl hover:shadow-primary/10 transition-all duration-500 ${isArchived ? "opacity-60 grayscale" : ""}`}>
+          {/* Glow effect on hover */}
+          <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
 
-              {taskLabels.length > 0 && (
-                <div className="flex flex-wrap gap-1 mt-2">
-                  {taskLabels.map((labelId) => {
-                    const label = labels[labelId]
-                    return (
-                      <Badge
-                        key={labelId}
-                        variant="outline"
-                        className="text-xs px-1.5 py-0"
-                        style={{ backgroundColor: label.color + "20", color: label.color, borderColor: label.color }}
-                      >
-                        <div className="w-1.5 h-1.5 rounded-full mr-1" style={{ backgroundColor: label.color }}></div>
-                        {label.name}
-                      </Badge>
-                    )
-                  })}
-                </div>
+          <CardContent className="p-5 relative z-10">
+            <div className="flex items-start justify-between gap-4">
+              <div className="flex-1 space-y-2.5">
+                <h4 className={`font-bold text-lg tracking-tight leading-tight group-hover:text-primary transition-colors ${task.completed ? "line-through text-muted-foreground" : ""}`}>{task.title}</h4>
+                <p className="text-sm text-muted-foreground/80 line-clamp-2 leading-relaxed font-medium">{task.description}</p>
+
+                {taskLabels.length > 0 && (
+                  <div className="flex flex-wrap gap-2 pt-1">
+                    {taskLabels.map((labelId) => {
+                      const label = labels[labelId]
+                      return (
+                        <Badge
+                          key={labelId}
+                          variant="secondary"
+                          className="text-[10px] px-2.5 py-1 font-black uppercase tracking-wider border-white/5 shadow-sm"
+                          style={{ backgroundColor: label.color + "15", color: label.color }}
+                        >
+                          <div className="w-1.5 h-1.5 rounded-full mr-2 shadow-[0_0_8px_currentColor]" style={{ backgroundColor: label.color }}></div>
+                          {label.name}
+                        </Badge>
+                      )
+                    })}
+                  </div>
+                )}
+              </div>
+              {/* Premium Priority Indicator */}
+              <div className={`w-3 h-3 rounded-full mt-2 flex-shrink-0 animate-pulse ${task.priority === 'high' ? 'bg-red-500 shadow-[0_0_12px_rgba(239,68,68,0.8)]' :
+                task.priority === 'medium' ? 'bg-yellow-500 shadow-[0_0_12px_rgba(234,179,8,0.6)]' :
+                  'bg-green-500 shadow-[0_0_12px_rgba(34,197,94,0.6)]'
+                }`}
+              />
+            </div>
+          </CardContent>
+          <CardFooter className="p-4 pt-0 flex justify-between items-center relative z-10">
+            <div className="flex items-center gap-3">
+              {dueDateStatus && (
+                <Badge variant="outline" className={`flex items-center px-2 py-0.5 rounded-lg border-white/5 bg-background/20 backdrop-blur-md text-[10px] font-black uppercase tracking-widest ${dueDateStatus.className.replace("bg-", "text-").replace("text-", "text-").split(" ")[1] || "text-muted-foreground"}`}>
+                  <div className="opacity-70 group-hover:opacity-100 transition-opacity">
+                    {dueDateStatus.icon}
+                  </div>
+                  <span className="ml-1.5">{dueDateStatus.label.replace("Due ", "")}</span>
+                </Badge>
               )}
             </div>
-          </div>
-        </CardContent>
-        <CardFooter className="flex flex-wrap items-center justify-between gap-2 p-4 pt-0 border-t">
-          <div className="flex flex-wrap items-center gap-2">
-            <Badge variant="outline" className={getPriorityColor(task.priority)}>
-              {task.priority}
-            </Badge>
-
-            {dueDateStatus && (
-              <Badge variant="outline" className={dueDateStatus.className}>
-                {dueDateStatus.icon}
-                {dueDateStatus.label}
-              </Badge>
-            )}
-
-            {task.reminder && (
-              <Badge
-                variant="outline"
-                className="bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-300"
-              >
-                <Bell className="mr-1 h-3 w-3" />
-                Reminder
-              </Badge>
-            )}
-          </div>
-          <div className="flex items-center gap-2">
-            <Button variant="ghost" size="sm" onClick={() => setIsEditDialogOpen(true)} className="h-8 w-8 p-0">
-              <Edit className="h-4 w-4" />
-              <span className="sr-only">Edit task</span>
-            </Button>
-            <Button variant="ghost" size="sm" onClick={onDelete} className="h-8 w-8 p-0">
-              <Trash2 className="h-4 w-4" />
-              <span className="sr-only">Delete task</span>
-            </Button>
-          </div>
-        </CardFooter>
-      </Card>
+            <div className="flex items-center gap-1.5 translate-x-4 opacity-0 group-hover:translate-x-0 group-hover:opacity-100 transition-all duration-300">
+              <Button variant="ghost" size="icon" className="h-8 w-8 hover:bg-primary/10 hover:text-primary rounded-lg transition-colors" onClick={() => setIsEditDialogOpen(true)}>
+                <Edit className="h-4 w-4" />
+              </Button>
+              <Button variant="ghost" size="icon" className="h-8 w-8 text-destructive/80 hover:text-destructive hover:bg-destructive/10 rounded-lg transition-colors" onClick={onDelete}>
+                <Trash2 className="h-4 w-4" />
+              </Button>
+            </div>
+          </CardFooter>
+        </Card>
+      </motion.div>
 
       <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
         <DialogContent className="sm:max-w-md">
@@ -219,6 +222,6 @@ export default function TaskCard({ task, labels = {}, onDelete, onEdit, isArchiv
           </div>
         </DialogContent>
       </Dialog>
-    </>
+    </div >
   )
 }
